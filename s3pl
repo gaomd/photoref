@@ -1,17 +1,6 @@
 #!/usr/bin/env php
 <?php
 
-use SssPhotoLibrary\Console\Command\PushCommand;
-use Symfony\Component\Console\Application;
-
 require('vendor/autoload.php');
 
-$application = new Application('S3 Photo Library', '0.0.0');
-
-$file = new \SssPhotoLibrary\File\File();
-$fileFactory = new \SssPhotoLibrary\File\FileFactory($file);
-$photo = new \SssPhotoLibrary\Photo\Photo();
-$s3CloudStorage = new \SssPhotoLibrary\CloudStorage\S3CloudStorage();
-
-$application->add(new PushCommand($fileFactory, $photo, $s3CloudStorage));
-$application->run();
+(new \SssPhotoLibrary\Console\Application)->run();
