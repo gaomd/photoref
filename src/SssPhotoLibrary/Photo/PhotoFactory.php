@@ -18,13 +18,13 @@ class PhotoFactory {
 	 * @param \SssPhotoLibrary\File\FileInterface $file
 	 * @return \SssPhotoLibrary\Photo\PhotoInterface
 	 */
-	public function read(FileInterface $file)
+	public function openFile(FileInterface $file)
 	{
 		$photoClass = get_class($this->photo);
 
 		/** @var \SssPhotoLibrary\Photo\PhotoInterface $photo */
 		$photo = new $photoClass;
-		$photo->read($file);
+		$photo->openFile($file);
 
 		return $photo;
 	}

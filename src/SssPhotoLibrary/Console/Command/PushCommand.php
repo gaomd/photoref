@@ -2,7 +2,7 @@
 
 use SssPhotoLibrary\CloudStorage\CloudStorageInterface;
 use SssPhotoLibrary\File\FileFactory;
-use SssPhotoLibrary\Photo\PhotoInterface;
+use SssPhotoLibrary\Photo\PhotoFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,17 +12,37 @@ use Symfony\Component\Console\Output\OutputInterface;
 class PushCommand extends Command {
 
 	/**
+	 * @var string
+	 */
+	protected $filePath;
+
+	/**
+	 * @var string
+	 */
+	protected $outputFilePath;
+
+	/**
 	 * @var \SssPhotoLibrary\CloudStorage\CloudStorageInterface
 	 */
 	private $cloudStorage;
 
-	public function __construct(FileFactory $file, PhotoInterface $photo, CloudStorageInterface $cloudStorage)
+	/**
+	 * @var \SssPhotoLibrary\File\FileFactory
+	 */
+	private $file;
+
+	/**
+	 * @var \SssPhotoLibrary\Photo\PhotoFactory
+	 */
+	private $photo;
+
+	public function __construct(FileFactory $file, PhotoFactory $photo, CloudStorageInterface $cloudStorage)
 	{
 		parent::__construct();
 
+		$this->cloudStorage = $cloudStorage;
 		$this->file = $file;
 		$this->photo = $photo;
-		$this->cloudStorage = $cloudStorage;
 	}
 
 	protected function configure()
@@ -44,36 +64,49 @@ class PushCommand extends Command {
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$filePath = $input->getArgument('file');
-		$outputFilePath = $input->getOption('output');
+		$this->sanitizeParameters($input);
 
-		$file = $this->file->open($filePath);
-		$id = sha1($file->toString());
-		if ($this->cloudStorage->upload($id, $file->toString()))
+		$file = $this->file->open($this->filePath);
+
+		if ( ! $this->cloudStorage->upload($file->sha1(), $file->toString()))
 		{
-			$metadata = ['id' => $id];
+			// @todo
 
-			$photo = $this->photo->read($file);
-			$photo->setMetadata($metadata)->resize(512, 512);
+			return;
+		}
 
-			// Output to STDOUT
-			if ($outputFilePath === '-')
-			{
-				$output->writeln($photo->toString());
+		$metadata = ['id' => $file->sha1()];
 
-				return;
-			}
+		$photo = $this->photo->openFile($file)->resize(512, 512)->setMetadata($metadata);
 
-			$outputFilePath = $outputFilePath ?: $this->getDefaultOutputFilePath($filePath);
-			$outputFile = $this->file->open($outputFilePath);
-			$outputFile->write($photo->toString());
+		if ($this->isStdOut())
+		{
+			$output->writeln($photo->toString());
 
-			$output->writeln("Successfully write thumbnail to {$outputFilePath}.");
+			return;
+		}
+
+		// Output to file
+		$outputFile = $this->file->open($this->outputFilePath);
+		$photo->saveFile($outputFile);
+		$output->writeln("Successfully write thumbnail to {$this->outputFilePath}.");
+	}
+
+	public function isStdOut()
+	{
+		return $this->outputFilePath === '-';
+	}
+
+	private function sanitizeParameters(InputInterface $input)
+	{
+		$this->filePath = $filePath = $input->getArgument('file');
+
+		$this->$outputFilePath = $outputFilePath = $input->getOption('output');
+
+		if ($outputFilePath === '')
+		{
+			$this->outputFilePath = $this->filePath . '.s3pl.jpg';
 		}
 	}
 
-	private function getDefaultOutputFilePath($filePath)
-	{
-		return $filePath . '.s3pl.jpg';
-	}
 }

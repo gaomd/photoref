@@ -9,7 +9,7 @@ class Photo implements PhotoInterface {
 	 * @return $this
 	 * @throws \Exception
 	 */
-	public function read(FileInterface $file)
+	public function openFile(FileInterface $file)
 	{
 		// TODO: Implement read() method.
 	}
@@ -48,5 +48,14 @@ class Photo implements PhotoInterface {
 	public function toString()
 	{
 		// TODO: Implement toString() method.
+	}
+
+	/**
+	 * @param \SssPhotoLibrary\File\FileInterface $file
+	 * @return int the number of bytes written, or null on error.
+	 */
+	public function saveFile(FileInterface $file)
+	{
+		// TODO: Implement saveFile() method.
 	}
 }

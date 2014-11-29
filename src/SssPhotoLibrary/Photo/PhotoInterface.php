@@ -9,7 +9,7 @@ interface PhotoInterface {
 	 * @return $this
 	 * @throws \Exception
 	 */
-	public function read(FileInterface $file);
+	public function openFile(FileInterface $file);
 
 	/**
 	 * @return array|null
@@ -35,4 +35,9 @@ interface PhotoInterface {
 	 */
 	public function toString();
 
+	/**
+	 * @param \SssPhotoLibrary\File\FileInterface $file
+	 * @return int the number of bytes written, or null on error.
+	 */
+	public function saveFile(FileInterface $file);
 }

@@ -5,6 +5,7 @@ use SssPhotoLibrary\Console\Command\PushCommand;
 use SssPhotoLibrary\File\File;
 use SssPhotoLibrary\File\FileFactory;
 use SssPhotoLibrary\Photo\Photo;
+use SssPhotoLibrary\Photo\PhotoFactory;
 
 class Application extends \Symfony\Component\Console\Application {
 
@@ -24,9 +25,8 @@ class Application extends \Symfony\Component\Console\Application {
 
 	public function getPushCommand()
 	{
-		$file = new File();
-		$fileFactory = new FileFactory($file);
-		$photo = new Photo();
+		$fileFactory = new FileFactory(new File());
+		$photo = new PhotoFactory(new Photo());
 		$s3CloudStorage = new S3CloudStorage();
 
 		return new PushCommand($fileFactory, $photo, $s3CloudStorage);
