@@ -116,7 +116,6 @@ class Photo implements PhotoInterface {
 
 		// @todo: QR Code should be placed on the top-left, but top-right is going on...
 		$success = $this->image->compositeImage($qrCodeImage, \Imagick::COMPOSITE_DEFAULT, 0, 0);
-
 		if ( ! $success)
 		{
 			throw new \RuntimeException('Unable to add QR Code to the target.');

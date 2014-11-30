@@ -17,7 +17,6 @@ class S3CloudStorage implements CloudStorageInterface {
 		);
 		$bucket = $config['cloud_storage']['amazon_s3']['bucket'];
 
-		return true;
 		return $s3->putObject($content, $bucket, $uri, \S3::ACL_PRIVATE);
 	}
 
