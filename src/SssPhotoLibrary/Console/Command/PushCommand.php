@@ -70,7 +70,7 @@ class PushCommand extends Command {
 
 		if ( ! $this->cloudStorage->upload($file->sha1(), $file->content()))
 		{
-			// @todo
+			$output->writeln("Uploading {$this->filePath}... <error>[FAILED]</error>");
 
 			return;
 		}
@@ -92,7 +92,7 @@ class PushCommand extends Command {
 		// Output to file
 		$outputFile = $this->file->open($this->outputFilePath, 'r+', false);
 		$photo->saveToFile($outputFile);
-		$output->writeln("Successfully write thumbnail to {$this->outputFilePath}.");
+		$output->writeln("Uploading {$this->filePath}... <info>[SUCCESS]</info>, thumbnail: {$this->outputFilePath}");
 	}
 
 	public function isStdOut()
