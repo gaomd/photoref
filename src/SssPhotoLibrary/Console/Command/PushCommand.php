@@ -77,7 +77,10 @@ class PushCommand extends Command {
 
 		$metadata = ['id' => $file->sha1()];
 
-		$photo = $this->photo->openFile($file)->resize(512, 512)->setMetadata($metadata);
+		$photo = $this->photo->openFile($file)
+		                     ->resize(512, 512)
+		                     ->stampQrCode($file->sha1())
+		                     ->setMetadata($metadata);
 
 		if ($this->isStdOut())
 		{

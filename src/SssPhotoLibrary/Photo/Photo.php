@@ -1,5 +1,6 @@
 <?php namespace SssPhotoLibrary\Photo;
 
+use Endroid\QrCode\QrCode;
 use SssPhotoLibrary\File\FileInterface;
 
 class Photo implements PhotoInterface {
@@ -86,4 +87,41 @@ class Photo implements PhotoInterface {
 		return $this->image->getImageBlob();
 	}
 
+	/**
+	 * @param $text
+	 * @return $this
+	 */
+	public function stampQrCode($text)
+	{
+		if (strlen($text) !== 40)
+		{
+			throw new \InvalidArgumentException('QR Code text string length should be exactly 40.');
+		}
+
+		$qrCode = new QrCode();
+
+		// Create a 80x80 QR Code image
+		// Reference: http://www.qrcode.com/en/about/version.html
+		$qrCodeData = $qrCode->setText($text)
+		                     ->setErrorCorrection(QrCode::LEVEL_HIGH)
+		                     ->setVersion(5)
+		                     ->setModuleSize(37)
+		                     ->setSize(74)
+		                     ->setPadding(3)
+		                     ->get();
+
+		$qrCodeImage = new \Imagick();
+		$qrCodeImage->readImageBlob($qrCodeData);
+		$qrCodeImage->setImageOpacity(0.6);
+
+		// @todo: QR Code should be placed on the top-left, but top-right is going on...
+		$success = $this->image->compositeImage($qrCodeImage, \Imagick::COMPOSITE_DEFAULT, 0, 0);
+
+		if ( ! $success)
+		{
+			throw new \RuntimeException('Unable to add QR Code to the target.');
+		}
+
+		return $this;
+	}
 }

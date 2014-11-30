@@ -31,6 +31,12 @@ interface PhotoInterface {
 	public function resize($maxWidth, $maxHeight);
 
 	/**
+	 * @param $text
+	 * @return $this
+	 */
+	public function stampQrCode($text);
+
+	/**
 	 * @return string
 	 */
 	public function blob();
