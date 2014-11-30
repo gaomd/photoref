@@ -3,11 +3,11 @@
 interface CloudStorageInterface {
 
 	/**
-	 * @param $id
+	 * @param $uri
 	 * @param $content
 	 * @return boolean
 	 */
-	public function upload($id, $content);
+	public function upload($uri, $content);
 
 	/**
 	 * @param $id
