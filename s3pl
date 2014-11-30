@@ -1,6 +1,9 @@
 #!/usr/bin/env php
 <?php
 
+define('JPEG_MARK_COM', '\xFF\xFE');
+define('JPEG_MARK_EOI', '\xFF\xD9');
+
 require('vendor/autoload.php');
 
 (new \SssPhotoLibrary\Console\Application)->run();

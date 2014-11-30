@@ -5,21 +5,37 @@ use SssPhotoLibrary\File\FileInterface;
 class Photo implements PhotoInterface {
 
 	/**
+	 * @var \Imagick
+	 */
+	protected $image;
+
+	/**
+	 * @var array
+	 */
+	protected $metadata;
+
+	/**
 	 * @param \SssPhotoLibrary\File\FileInterface $file
 	 * @return $this
 	 * @throws \Exception
 	 */
 	public function openFile(FileInterface $file)
 	{
-		// TODO: Implement read() method.
+		$this->image = $imagick = new \Imagick();
+		if ( ! $imagick->readImageBlob($file->content()))
+		{
+			throw new \InvalidArgumentException('Unable to recognize image file format.');
+		}
 	}
 
 	/**
-	 * @return array|null
+	 * @return array
 	 */
 	public function getMetadata()
 	{
-		// TODO: Implement getMetadata() method.
+		$metadata = json_decode($this->image->getImageProperty('comment'));
+
+		return is_array($metadata) ? $metadata : [];
 	}
 
 	/**
@@ -29,7 +45,14 @@ class Photo implements PhotoInterface {
 	 */
 	public function setMetadata(array $metadata)
 	{
-		// TODO: Implement setMetadata() method.
+		$success = $this->image->commentImage(json_encode($metadata));
+
+		if ( ! $success)
+		{
+			throw new \Exception('Unable to set metadata.');
+		}
+
+		return $this;
 	}
 
 	/**
@@ -39,23 +62,28 @@ class Photo implements PhotoInterface {
 	 */
 	public function resize($maxWidth, $maxHeight)
 	{
-		// TODO: Implement resize() method.
-	}
+		$this->image->resizeImage($maxWidth, $maxHeight, \Imagick::FILTER_LANCZOS, 1, true);
 
-	/**
-	 * @return string
-	 */
-	public function toString()
-	{
-		// TODO: Implement toString() method.
+		return $this;
 	}
 
 	/**
 	 * @param \SssPhotoLibrary\File\FileInterface $file
 	 * @return int the number of bytes written, or null on error.
 	 */
-	public function saveFile(FileInterface $file)
+	public function saveToFile(FileInterface $file)
 	{
-		// TODO: Implement saveFile() method.
+		$file->save($this->blob());
 	}
+
+	/**
+	 * @return string
+	 */
+	public function blob()
+	{
+		$this->image->setImageFormat('jpeg');
+
+		return $this->image->getImageBlob();
+	}
+
 }

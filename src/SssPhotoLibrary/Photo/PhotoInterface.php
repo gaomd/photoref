@@ -12,7 +12,7 @@ interface PhotoInterface {
 	public function openFile(FileInterface $file);
 
 	/**
-	 * @return array|null
+	 * @return array
 	 */
 	public function getMetadata();
 
@@ -33,11 +33,13 @@ interface PhotoInterface {
 	/**
 	 * @return string
 	 */
-	public function toString();
+	public function blob();
+
+	//public function saveTo($path);
 
 	/**
 	 * @param \SssPhotoLibrary\File\FileInterface $file
 	 * @return int the number of bytes written, or null on error.
 	 */
-	public function saveFile(FileInterface $file);
+	public function saveToFile(FileInterface $file);
 }

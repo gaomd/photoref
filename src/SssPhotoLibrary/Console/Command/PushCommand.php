@@ -68,7 +68,7 @@ class PushCommand extends Command {
 
 		$file = $this->file->open($this->filePath);
 
-		if ( ! $this->cloudStorage->upload($file->sha1(), $file->toString()))
+		if ( ! $this->cloudStorage->upload($file->sha1(), $file->content()))
 		{
 			// @todo
 
@@ -81,14 +81,14 @@ class PushCommand extends Command {
 
 		if ($this->isStdOut())
 		{
-			$output->writeln($photo->toString());
+			$output->writeln($photo->blob());
 
 			return;
 		}
 
 		// Output to file
 		$outputFile = $this->file->open($this->outputFilePath);
-		$photo->saveFile($outputFile);
+		$photo->saveToFile($outputFile);
 		$output->writeln("Successfully write thumbnail to {$this->outputFilePath}.");
 	}
 
@@ -101,7 +101,7 @@ class PushCommand extends Command {
 	{
 		$this->filePath = $filePath = $input->getArgument('file');
 
-		$this->$outputFilePath = $outputFilePath = $input->getOption('output');
+		$this->outputFilePath = $outputFilePath = $input->getOption('output');
 
 		if ($outputFilePath === '')
 		{

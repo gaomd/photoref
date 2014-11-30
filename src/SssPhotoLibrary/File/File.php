@@ -8,7 +8,7 @@ class File implements FileInterface {
 	/** @var \SplFileInfo */
 	private $fileInfo;
 
-	public function open($path, $mode = 'r', $checkExists = false)
+	public function open($path, $mode = 'r', $checkExists = true)
 	{
 		$this->fileInfo = new \SplFileInfo($path);
 
@@ -27,27 +27,28 @@ class File implements FileInterface {
 		return $this;
 	}
 
-	public function seekTo($offset)
+	public function save($content)
 	{
-		$this->file->fseek($offset);
+		$this->file->ftruncate(0);
+		$this->file->fseek(0);
 
-		return $this;
-	}
-
-	public function write($content)
-	{
 		return $this->file->fwrite($content);
 	}
 
-	public function toString()
+	public function content()
 	{
-		$this->file->rewind();
+		if (method_exists($this->file, 'fread'))
+		{
+			return $this->file->fread($this->file->getSize());
+		}
 
+		// Simulate \SplFileObject::fread
 		$content = '';
 
-		while (($c = $this->file->fgetc()) !== false)
+		$this->file->fseek(0);
+		while ( ! $this->file->eof())
 		{
-			$content .= $c;
+			$content .= $this->file->fgetc();
 		}
 
 		return $content;
@@ -55,6 +56,7 @@ class File implements FileInterface {
 
 	public function sha1()
 	{
-		return sha1($this->toString());
+		return sha1($this->content());
 	}
+
 }

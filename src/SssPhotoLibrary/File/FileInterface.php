@@ -7,22 +7,23 @@ interface FileInterface {
 	 * @param string $mode
 	 * @param bool $checkExists
 	 * @return $this
+	 * @throws \InvalidArgumentException
 	 */
 	public function open($path, $mode = 'r', $checkExists = false);
-
-	/**
-	 * @param $offset
-	 * @return $this
-	 */
-	public function seekTo($offset);
 
 	/**
 	 * @param $content
 	 * @return int the number of bytes written, or null on error.
 	 */
-	public function write($content);
+	public function save($content);
 
-	public function toString();
+	/**
+	 * @return string
+	 */
+	public function content();
 
+	/**
+	 * @return string
+	 */
 	public function sha1();
 }

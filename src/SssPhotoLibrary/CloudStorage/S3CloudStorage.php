@@ -9,7 +9,7 @@ class S3CloudStorage implements CloudStorageInterface {
 	 */
 	public function upload($id, $content)
 	{
-		// TODO: Implement upload() method.
+		return true;
 	}
 
 	/**
