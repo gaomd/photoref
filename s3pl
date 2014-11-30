@@ -9,4 +9,9 @@ require('vendor/autoload.php');
 
 $config['cloud_storage'] = require('app/config/production/cloud_storage.php');
 
+if ( ! class_exists('Imagick'))
+{
+	throw new Exception('PHP Imagick extension not installed.');
+}
+
 (new \SssPhotoLibrary\Console\Application)->run();
