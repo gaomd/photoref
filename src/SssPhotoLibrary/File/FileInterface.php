@@ -9,7 +9,7 @@ interface FileInterface {
 	 * @return $this
 	 * @throws \InvalidArgumentException
 	 */
-	public function open($path, $mode = 'r', $checkExists = false);
+	public function open($path, $mode = 'r', $checkExists = true);
 
 	/**
 	 * @param $content

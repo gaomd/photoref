@@ -2,6 +2,11 @@
 
 class File implements FileInterface {
 
+	/**
+	 * @var string
+	 */
+	private $openMode;
+
 	/** @var \SplFileObject */
 	private $file;
 
@@ -10,9 +15,10 @@ class File implements FileInterface {
 
 	public function open($path, $mode = 'r', $checkExists = true)
 	{
+		$this->openMode = $mode;
 		$this->fileInfo = new \SplFileInfo($path);
 
-		if ($checkExists && ! file_exists($path))
+		if ($checkExists && ! $this->exists())
 		{
 			throw new \InvalidArgumentException("{$path} does not exist.");
 		}
@@ -22,13 +28,37 @@ class File implements FileInterface {
 			throw new \InvalidArgumentException("{$path} exists but is not a file.");
 		}
 
-		$this->file = $this->fileInfo->openFile($mode);
-
 		return $this;
+	}
+
+	private function openFile()
+	{
+		if ( ! $this->exists())
+		{
+			// @todo: Real Path?
+			touch($this->fileInfo->getFilename());
+		}
+
+		$this->file = $this->fileInfo->openFile($this->openMode);
+	}
+
+	public function exists()
+	{
+		return file_exists($this->fileInfo->getRealPath());
+	}
+
+	private function opened()
+	{
+		return $this->file instanceof \SplFileObject;
 	}
 
 	public function save($content)
 	{
+		if ( ! $this->opened())
+		{
+			$this->openFile();
+		}
+
 		$this->file->ftruncate(0);
 		$this->file->fseek(0);
 
@@ -37,18 +67,26 @@ class File implements FileInterface {
 
 	public function content()
 	{
-		if (method_exists($this->file, 'fread'))
+		if ( ! $this->opened())
 		{
-			return $this->file->fread($this->file->getSize());
+			$this->openFile();
 		}
 
-		// Simulate \SplFileObject::fread
-		$content = '';
-
 		$this->file->fseek(0);
-		while ( ! $this->file->eof())
+
+		if (method_exists($this->file, 'fread'))
 		{
-			$content .= $this->file->fgetc();
+			$content = $this->file->fread($this->file->getSize());
+		}
+		else
+		{
+			// Simulate \SplFileObject::fread
+			$content = '';
+
+			while ( ! $this->file->eof())
+			{
+				$content .= $this->file->fgetc();
+			}
 		}
 
 		return $content;

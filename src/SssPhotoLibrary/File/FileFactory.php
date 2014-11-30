@@ -14,15 +14,17 @@ class FileFactory {
 
 	/**
 	 * @param $path
+	 * @param string $mode
+	 * @param bool $checkExists
 	 * @return \SssPhotoLibrary\File\FileInterface
 	 */
-	public function open($path)
+	public function open($path, $mode = 'r', $checkExists = true)
 	{
 		$fileClass = get_class($this->file);
 
 		/** @var \SssPhotoLibrary\File\FileInterface $file */
 		$file = new $fileClass;
-		$file->open($path);
+		$file->open($path, $mode, $checkExists);
 
 		return $file;
 	}

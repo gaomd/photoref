@@ -4,6 +4,8 @@
 define('JPEG_MARK_COM', '\xFF\xFE');
 define('JPEG_MARK_EOI', '\xFF\xD9');
 
+function dd($data) { var_dump($data); die(); }
+
 require('vendor/autoload.php');
 
 (new \SssPhotoLibrary\Console\Application)->run();

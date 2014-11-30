@@ -87,7 +87,7 @@ class PushCommand extends Command {
 		}
 
 		// Output to file
-		$outputFile = $this->file->open($this->outputFilePath);
+		$outputFile = $this->file->open($this->outputFilePath, 'r+', false);
 		$photo->saveToFile($outputFile);
 		$output->writeln("Successfully write thumbnail to {$this->outputFilePath}.");
 	}
@@ -103,9 +103,9 @@ class PushCommand extends Command {
 
 		$this->outputFilePath = $outputFilePath = $input->getOption('output');
 
-		if ($outputFilePath === '')
+		if ($outputFilePath === null)
 		{
-			$this->outputFilePath = $this->filePath . '.s3pl.jpg';
+			$this->outputFilePath = $filePath . '.s3pl.jpg';
 		}
 	}
 
